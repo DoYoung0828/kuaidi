@@ -4,11 +4,12 @@ package com.zzy.xxx.controller;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zzy.xxx.common.CommonResult;
 import com.zzy.xxx.common.PageResult;
 import com.zzy.xxx.controller.common.BaseController;
-import com.zzy.xxx.pojo.User;
-import com.zzy.xxx.pojo.UserInfo;
+import com.zzy.xxx.mapper.UserInfoMapper;
+import com.zzy.xxx.pojo.*;
 import com.zzy.xxx.service.UserInfoService;
 import com.zzy.xxx.service.UserService;
 import com.zzy.xxx.utils.HashUtil;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.zzy.xxx.common.CommonResult.success;
 
@@ -41,6 +43,9 @@ public class UserInfoController extends BaseController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    UserInfoMapper userInfoMapper;
+
     /**
      * 查询用户信息
      */
@@ -55,10 +60,12 @@ public class UserInfoController extends BaseController {
 
     //获取用户列表
     @GetMapping("/getUserList")
-    public CommonResult<List<UserInfo>> getUserList(String key) {
-        QueryWrapper<UserInfo> queryWrapper = new QueryWrapper<>();
-        queryWrapper.like(CharSequenceUtil.isNotBlank(key), "name", key);
-        return success(userInfoService.list(queryWrapper));
+    public CommonResult<PageResult<UserInfo>> getUserList(String name, Integer pageNo, Integer pageSize) {
+
+        final Page<UserInfo> queryPage = new Page<>(pageNo, pageSize);
+        Page<UserInfo> userList = userInfoMapper.getUserList(queryPage, name);
+        PageResult<UserInfo> userInfoPageResult1 = new PageResult<>(userList.getRecords(), userList.getTotal());
+        return success(userInfoPageResult1);
     }
 
     /**

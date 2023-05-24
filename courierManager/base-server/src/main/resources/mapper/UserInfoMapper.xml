@@ -36,4 +36,13 @@
         </if>
     </select>
 
+    <select id="getUserList" resultType="com.zzy.xxx.pojo.UserInfo">
+        select *
+        from t_user_info
+        where deleted = 0
+        <if test="name != null and name != ''">
+            and `name` like concat('%',#{name},'%')
+        </if>
+    </select>
+
 </mapper>
