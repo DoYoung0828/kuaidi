@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.xxx.mapper.DeliveryMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.xxx.pojo.Delivery">
+        <id column="id" property="id"/>
+        <result column="express_no" property="expressNo"/>
+        <result column="courier_id" property="courierId"/>
+        <result column="express_status" property="expressStatus"/>
+        <result column="end_time" property="endTime"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , express_no, courier_id, car_id, express_status, end_time, created_time, updated_time, deleted
+    </sql>
+
+    <resultMap id="Delivery" type="com.zzy.xxx.pojo.Delivery">
+        <id property="id" column="id"/>
+        <result property="expressNo" column="express_no"/>
+        <result property="name" column="name"/>
+        <result property="phone" column="phone"/>
+        <result property="expressStatus" column="express_status"/>
+        <result property="createdTime" column="created_time"/>
+        <result property="endTime" column="end_time"/>
+        <association property="car" javaType="com.zzy.xxx.pojo.Car">
+            <id property="id" column="carId"/>
+            <result property="carNo" column="carNo"/>
+            <result property="carType" column="carType"/>
+            <result property="carDescription" column="carDescription"/>
+        </association>
+    </resultMap>
+
+    <select id="pageDeliver" resultMap="Delivery">
+        select d.*,
+        c.id carId,c.car_no carNo,c.car_type carType,c.car_description carDescription,
+        i.name,i.phone
+        from t_delivery d,t_user u,t_user_info i,t_express e,t_car c
+        where d.courier_id = u.id
+        and d.drone_id = c.id
+        and u.id = i.user_id
+        and d.express_no = e.express_no
+        and d.deleted = 0
+        <if test="param.expressNo != null and param.expressNo != ''">
+            and d.express_no like concat('%',#{param.expressNo},'%')
+        </if>
+        <if test="param.expressStatus != null and param.expressStatus != ''">
+            and d.express_status = #{param.expressStatus}
+        </if>
+        <if test="param.roleId == 3">
+            and e.receiver_phone = #{param.phone}
+        </if>
+        <if test="param.roleId == 2">
+            and d.courier_id = #{param.userId}
+        </if>
+    </select>
+
+</mapper>

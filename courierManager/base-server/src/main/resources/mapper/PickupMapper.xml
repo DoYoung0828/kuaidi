@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.xxx.mapper.PickupMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.xxx.pojo.Pickup">
+        <id column="id" property="id"/>
+        <result column="express_no" property="expressNo"/>
+        <result column="user_id" property="userId"/>
+        <result column="receiver_name" property="receiverName"/>
+        <result column="receiver_phone" property="receiverPhone"/>
+        <result column="receiver_address" property="receiverAddress"/>
+        <result column="express_company" property="expressCompany"/>
+        <result column="order_time" property="orderTime"/>
+        <result column="status" property="status"/>
+        <result column="logistics_id" property="logisticsId"/>
+        <result column="created_time" property="createdTime"/>
+        <result column="updated_time" property="updatedTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id
+        , express_no, user_id, receiver_name, receiver_phone, receiver_address, express_company, order_time, auth_status, status, logistics_id, created_time, updated_time, deleted
+    </sql>
+
+    <resultMap id="PickupVo" type="com.zzy.xxx.vo.PickupVo">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result property="pickupName" column="pickup_name"/>
+        <result property="pickupPhone" column="pickup_phone"/>
+        <result property="pickupAddress" column="pickup_address"/>
+        <result property="receiverName" column="receiver_name"/>
+        <result property="receiverPhone" column="receiver_phone"/>
+        <result property="receiverAddress" column="receiver_address"/>
+        <result property="expressNo" column="express_no"/>
+        <result property="expressCompany" column="express_company"/>
+        <result property="orderTime" column="order_time"/>
+        <result property="status" column="status"/>
+        <result property="amount" column="amount"/>
+        <result property="itemNo" column="item_no"/>
+        <association property="logistics" javaType="com.zzy.xxx.pojo.LogisticsInfo">
+            <id column="lid" property="id"/>
+            <result column="current_status" property="currentStatus"/>
+            <result column="current_location" property="currentLocation"/>
+            <result column="delivery_time" property="deliveryTime"/>
+        </association>
+    </resultMap>
+    <select id="pickupPage" resultMap="PickupVo">
+        select p.*,
+               u.username,
+               l.id,
+               l.id lid,
+               l.current_status,
+               l.current_location,
+               l.delivery_time
+        from t_pickup p
+                 left join t_logistics_info l on p.id = l.pick_express_id
+                 inner join t_user u on u.id = p.user_id
+        where p.deleted = 0
+        <if test="param.expressNo != null and param.expressNo != ''">
+            and p.express_no like concat('%',#{param.expressNo},'%')
+        </if>
+        <if test="param.receiverName != null and param.receiverName != ''">
+            and p.receiver_name like concat('%',#{param.receiverName},'%')
+        </if>
+        <if test="param.expressCompany != null and param.expressCompany != ''">
+            and p.express_company like concat('%',#{param.expressCompany},'%')
+        </if>
+        <if test="param.userId != null and param.userId != ''">
+            and p.user_id like concat('%',#{param.userId},'%')
+        </if>
+    </select>
+
+</mapper>

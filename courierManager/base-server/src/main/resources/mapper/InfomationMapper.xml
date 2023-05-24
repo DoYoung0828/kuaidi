@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.xxx.mapper.InformationMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.xxx.pojo.Information">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="Information_type" property="informationType" />
+        <result column="img" property="img" />
+        <result column="description" property="description" />
+        <result column="createdTime" property="createdTime" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, title, Information_type, img, description, createdTime, updated_time, deleted
+    </sql>
+
+    <select id="pageInformation" resultType="com.zzy.xxx.pojo.Information">
+        select *
+        from t_information
+        where deleted = 0
+        <if test="param.title != null and param.title != ''">
+            and title like concat('%',#{param.title},'%')
+        </if>
+        <if test="param.type != null and param.type != ''">
+            and type like concat('%',#{param.type},'%')
+        </if>
+    </select>
+
+</mapper>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzy.xxx.mapper.CarMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzy.xxx.pojo.Car">
+        <id column="id" property="id" />
+        <result column="car_no" property="carNo" />
+        <result column="car_type" property="carType" />
+        <result column="user_id" property="userId" />
+        <result column="car_description" property="carDescription" />
+        <result column="created_time" property="createdTime" />
+        <result column="updated_time" property="updatedTime" />
+        <result column="deleted" property="deleted" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, car_no, car_type, user_id, car_description, created_time, updated_time, deleted
+    </sql>
+
+    <select id="carPage" resultType="com.zzy.xxx.pojo.Car">
+        select ca.*,u.username courierName
+        from t_car ca,t_user u
+        where ca.user_id = u.id
+        and ca.deleted = 0
+        <if test="param.carNo != null and param.carNo != ''">
+            and car_no like concat('%',#{param.carNo},'%')
+        </if>
+        <if test="param.carType != null and param.carType != ''">
+            and car_type like concat('%',#{param.carType},'%')
+        </if>
+        <if test="param.userId != null and param.userId != ''">
+            and ca.user_id = #{param.userId}
+        </if>
+    </select>
+
+</mapper>
