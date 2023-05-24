@@ -94,6 +94,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new ServiceException(PHONE_EXIST);
         }
 
+        String pwd = user.getPassword();
         user.setPassword(HashUtil.createMd5Hash(user.getPassword()));
         userMapper.insert(user);
 
@@ -115,6 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userInfo.setPhone(user.getPhone());
         userInfo.setName(user.getName());
         userInfo.setUserId(user.getId());
+        userInfo.setPassword(pwd);
         if (3 == user.getRoleId()) {
             Random rand = new Random();
             int i = rand.nextInt(999999);
